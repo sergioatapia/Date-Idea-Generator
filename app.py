@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()
+API_KEY = os.getenv("OWM_API_KEY")
 import requests
 import streamlit as st
 from datetime import datetime
@@ -40,11 +44,30 @@ def get_coordinates(location):
         return None, None
 
 
+def get_weather(lat, lon):
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=imperial&appid={API_KEY}"
+    response = requests.get(url)
+    try:
+        data = response.json()
+        if response.status_code == 200:
+            temp = data['main']['temp']
+            desc = data['weather'][0]['description'].title()
+            return temp, desc
+        else:
+            return None, None
+    except:
+        return None, None
 
 
 # Output section
 if st.button("🎯 Get Date Ideas"):
     lat, lon = get_coordinates(location)
+    temp, desc = get_weather(lat, lon)
+
+    if temp is not None:
+        st.info(f"🌡️ Weather in {location}: {temp:.0f}°F, {desc}")
+    else:
+        st.warning("⚠️ Couldn't get weather data.")
 
     if lat is None:
         st.error("❌ Couldn't find that location. Please try a different city or zip.")
