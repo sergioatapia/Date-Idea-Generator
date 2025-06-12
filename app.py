@@ -55,6 +55,16 @@ def get_weather(lat, lon):
     except:
         return None, None
 
+def classify_weather(temp, desc):
+    condition = "mild"
+    if temp < 40:
+        condition = "cold"
+    elif temp > 85:
+        condition = "hot"
+    if "rain" in desc.lower() or "storm" in desc.lower():
+        condition = "rain"
+    return condition
+
 
 # Output section
 if st.button("🎯 Get Date Ideas"):
