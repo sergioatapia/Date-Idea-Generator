@@ -16,9 +16,6 @@ location = st.text_input("📍 Enter your city or zip code")
 time_of_day = st.selectbox("⏰ What time of day?", ["Morning", "Afternoon", "Evening", "Late Night"])
 distance = st.slider("📏 Max travel distance (miles)", 1, 50, 10)
 
-# Your OpenWeather API key
-API_KEY = "4664a3ab742d77aaef2535be50aeba32"
-
 # Function to get lat/lon from location
 def get_coordinates(location):
     if not location:
