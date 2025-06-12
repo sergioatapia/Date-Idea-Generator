@@ -84,23 +84,63 @@ if st.button("🎯 Get Date Ideas"):
 
     st.subheader("Here are 3 ideas:")
 
+    condition = classify_weather(temp, desc)
+
+    ideas = []
+
+    if condition == "cold":
+        ideas = [
+        {
+            "title": "Cozy Cafe Hop",
+            "location": "Downtown coffee spots",
+            "note": "Stay warm while taste-testing local drinks."
+        },
+        {
+            "title": "Board Game Lounge",
+            "location": "Indoor game bar or library",
+            "note": "Team up or go head-to-head inside where it's warm."
+        },
+    ]
+elif condition == "hot":
     ideas = [
         {
-            "title": "Sunrise Coffee & Walk",
-            "location": "Local lake or trail",
-            "note": "Start the day with fresh air and good conversation."
+            "title": "Lake Day & Ice Cream",
+            "location": "Nearest public beach",
+            "note": "Swim, tan, and cool off with a cone."
         },
         {
-            "title": "Arcade + Pizza Combo",
-            "location": "Nearest retro barcade",
-            "note": "Play games, grab a slice, and laugh together."
+            "title": "Sunset Rooftop Drinks",
+            "location": "Open-air rooftop bar",
+            "note": "Chill vibes and cold beverages as the sun sets."
         },
-        {
-            "title": "Stargazing Escape",
-            "location": f"Scenic lookout ~{distance} mi from {location}",
-            "note": "Blanket, snacks, and the stars."
-        }
     ]
+elif condition == "rain":
+    ideas = [
+        {
+            "title": "Rainy Movie Marathon",
+            "location": "Home or boutique cinema",
+            "note": "Cuddle up with a classic or something new."
+        },
+        {
+            "title": "Indoor Mini Golf",
+            "location": "Glow-in-the-dark golf lounge",
+            "note": "Fun, competitive, and rainproof."
+        },
+    ]
+else:  # mild weather
+    ideas = [
+        {
+            "title": "Scenic Park Picnic",
+            "location": "Local botanical garden or park",
+            "note": "Relax, eat, and enjoy the fresh air."
+        },
+        {
+            "title": "Farmers Market Adventure",
+            "location": "Outdoor local market",
+            "note": "Pick snacks or flowers together."
+        },
+    ]
+
 
     for idea in ideas:
         st.markdown(f"### 📝 {idea['title']}")
