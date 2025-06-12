@@ -90,56 +90,56 @@ if st.button("🎯 Get Date Ideas"):
 
     if condition == "cold":
         ideas = [
-        {
-            "title": "Cozy Cafe Hop",
-            "location": "Downtown coffee spots",
-            "note": "Stay warm while taste-testing local drinks."
-        },
-        {
-            "title": "Board Game Lounge",
-            "location": "Indoor game bar or library",
-            "note": "Team up or go head-to-head inside where it's warm."
-        },
-    ]
-elif condition == "hot":
-    ideas = [
-        {
-            "title": "Lake Day & Ice Cream",
-            "location": "Nearest public beach",
-            "note": "Swim, tan, and cool off with a cone."
-        },
-        {
-            "title": "Sunset Rooftop Drinks",
-            "location": "Open-air rooftop bar",
-            "note": "Chill vibes and cold beverages as the sun sets."
-        },
-    ]
-elif condition == "rain":
-    ideas = [
-        {
-            "title": "Rainy Movie Marathon",
-            "location": "Home or boutique cinema",
-            "note": "Cuddle up with a classic or something new."
-        },
-        {
-            "title": "Indoor Mini Golf",
-            "location": "Glow-in-the-dark golf lounge",
-            "note": "Fun, competitive, and rainproof."
-        },
-    ]
-else:  # mild weather
-    ideas = [
-        {
-            "title": "Scenic Park Picnic",
-            "location": "Local botanical garden or park",
-            "note": "Relax, eat, and enjoy the fresh air."
-        },
-        {
-            "title": "Farmers Market Adventure",
-            "location": "Outdoor local market",
-            "note": "Pick snacks or flowers together."
-        },
-    ]
+            {
+                "title": "Cozy Cafe Hop",
+                "location": "Downtown coffee spots",
+                "note": "Stay warm while taste-testing local drinks."
+            },
+            {
+                "title": "Board Game Lounge",
+                "location": "Indoor game bar or library",
+                "note": "Team up or go head-to-head inside where it's warm."
+            },
+        ]
+    elif condition == "hot":
+        ideas = [
+            {
+                "title": "Lake Day & Ice Cream",
+                "location": "Nearest public beach",
+                "note": "Swim, tan, and cool off with a cone."
+            },
+            {
+                "title": "Sunset Rooftop Drinks",
+                "location": "Open-air rooftop bar",
+                "note": "Chill vibes and cold beverages as the sun sets."
+            },
+        ]
+    elif condition == "rain":
+        ideas = [
+            {
+                "title": "Rainy Movie Marathon",
+                "location": "Home or boutique cinema",
+                "note": "Cuddle up with a classic or something new."
+            },
+            {
+                "title": "Indoor Mini Golf",
+                "location": "Glow-in-the-dark golf lounge",
+                "note": "Fun, competitive, and rainproof."
+            },
+        ]
+    else:  # mild weather
+        ideas = [
+            {
+                "title": "Scenic Park Picnic",
+                "location": "Local botanical garden or park",
+                "note": "Relax, eat, and enjoy the fresh air."
+            },
+            {
+                "title": "Farmers Market Adventure",
+                "location": "Outdoor local market",
+                "note": "Pick snacks or flowers together."
+            },
+        ]
 
 
     for idea in ideas:
