@@ -12,33 +12,31 @@ st.title("💘 Date Idea Generator")
 st.markdown("Get fun date ideas based on your time, location, and vibe.")
 
 # Input fields
-location = st.text_input("📍 Enter your city or zip code")
+location = st.text_input("📍 Enter your location (address, city, or zip)")
 time_of_day = st.selectbox("⏰ What time of day?", ["Morning", "Afternoon", "Evening", "Late Night"])
 distance = st.slider("📏 Max travel distance (miles)", 1, 50, 10)
 
 # Function to get lat/lon from location
 def get_coordinates(location):
-    if not location:
+    API_KEY = os.getenv("GOOGLE_API_KEY")
+    if not API_KEY:
+        st.error("Google API Key not found.")
         return None, None
 
-    # Determine if input looks like a ZIP code (all digits)
-    if location.strip().isdigit():
-        url = f"http://api.openweathermap.org/geo/1.0/zip?zip={location},US&appid={API_KEY}"
-    else:
-        url = f"http://api.openweathermap.org/geo/1.0/direct?q={location}&limit=1&appid={API_KEY}"
-
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={location}&key={API_KEY}"
     response = requests.get(url)
     try:
         data = response.json()
-        if isinstance(data, list) and data:
-            return data[0]['lat'], data[0]['lon']
-        elif isinstance(data, dict) and 'lat' in data:
-            return data['lat'], data['lon']
+        if data["status"] == "OK":
+            lat = data["results"][0]["geometry"]["location"]["lat"]
+            lon = data["results"][0]["geometry"]["location"]["lng"]
+            return lat, lon
         else:
             return None, None
     except Exception as e:
-        st.error(f"API Error: {e}")
+        st.error(f"Geocoding error: {e}")
         return None, None
+
 
 
 def get_weather(lat, lon):
@@ -54,6 +52,29 @@ def get_weather(lat, lon):
             return None, None
     except:
         return None, None
+    
+def get_places(lat, lon, radius, keyword):
+    import os
+    API_KEY = os.getenv("GOOGLE_API_KEY")
+    if not API_KEY:
+        st.error("Google API Key not found. Please check your .env file.")
+        return []
+
+    # Convert miles to meters (Google requires meters)
+    radius_meters = radius * 1609
+
+    url = (
+        f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+        f"location={lat},{lon}&radius={radius_meters}&keyword={keyword}"
+        f"&opennow=true&key={API_KEY}"
+    )
+
+    response = requests.get(url)
+    try:
+        results = response.json().get("results", [])
+        return results
+    except:
+        return []
 
 def classify_weather(temp, desc):
     condition = "mild"
@@ -82,68 +103,35 @@ if st.button("🎯 Get Date Ideas"):
     else:
         st.success(f"📍 Coordinates found: {lat:.2f}, {lon:.2f}")
 
-    st.subheader("Here are 3 ideas:")
-
     condition = classify_weather(temp, desc)
 
-    ideas = []
+    # Map weather to place types
+    weather_keywords = {
+        "cold": "coffee|arcade|museum|indoor",
+        "hot": "ice cream|lake|park|swimming",
+        "rain": "cinema|museum|arcade|cafe",
+        "mild": "outdoor|cafe|park|trail|picnic"
+    }
 
-    if condition == "cold":
-        ideas = [
-            {
-                "title": "Cozy Cafe Hop",
-                "location": "Downtown coffee spots",
-                "note": "Stay warm while taste-testing local drinks."
-            },
-            {
-                "title": "Board Game Lounge",
-                "location": "Indoor game bar or library",
-                "note": "Team up or go head-to-head inside where it's warm."
-            },
-        ]
-    elif condition == "hot":
-        ideas = [
-            {
-                "title": "Lake Day & Ice Cream",
-                "location": "Nearest public beach",
-                "note": "Swim, tan, and cool off with a cone."
-            },
-            {
-                "title": "Sunset Rooftop Drinks",
-                "location": "Open-air rooftop bar",
-                "note": "Chill vibes and cold beverages as the sun sets."
-            },
-        ]
-    elif condition == "rain":
-        ideas = [
-            {
-                "title": "Rainy Movie Marathon",
-                "location": "Home or boutique cinema",
-                "note": "Cuddle up with a classic or something new."
-            },
-            {
-                "title": "Indoor Mini Golf",
-                "location": "Glow-in-the-dark golf lounge",
-                "note": "Fun, competitive, and rainproof."
-            },
-        ]
-    else:  # mild weather
-        ideas = [
-            {
-                "title": "Scenic Park Picnic",
-                "location": "Local botanical garden or park",
-                "note": "Relax, eat, and enjoy the fresh air."
-            },
-            {
-                "title": "Farmers Market Adventure",
-                "location": "Outdoor local market",
-                "note": "Pick snacks or flowers together."
-            },
-        ]
+    keyword = weather_keywords.get(condition, "date")
 
+    # Fetch real places
+    results = get_places(lat, lon, distance, keyword)
 
-    for idea in ideas:
-        st.markdown(f"### 📝 {idea['title']}")
-        st.markdown(f"📍 **Location**: {idea['location']}")
-        st.markdown(f"💡 {idea['note']}")
-        st.markdown("---")
+    if not results:
+        st.warning("😕 No places found nearby that match the vibe.")
+    else:
+        for place in results[:5]:  # limit to 5 results
+            name = place.get("name", "Unknown Place")
+            address = place.get("vicinity", "Address not available")
+            open_now = place.get("opening_hours", {}).get("open_now", None)
+            rating = place.get("rating", "N/A")
+            maps_url = f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}"
+
+            st.markdown(f"### 📍 [{name}]({maps_url})")
+            st.markdown(f"- 📌 **Address:** {address}")
+            st.markdown(f"- ⭐ **Rating:** {rating}")
+            if open_now is not None:
+                st.markdown(f"- 🟢 {'Open now' if open_now else 'Closed now'}")
+            st.markdown("---")
+
